@@ -6,83 +6,102 @@
 //
 
 import SwiftUI
-import CoreData
+import FirebaseFirestoreSwift
+import Combine
 
-struct ContentView: View {
-    @Environment(\.managedObjectContext) private var viewContext
+struct Todo: FBModelType, Equatable {
+    @DocumentID var id: String? = UUID().uuidString
+    var text: String = ""
+    var isDone: Bool = false
+}
 
-    @FetchRequest(
-        sortDescriptors: [NSSortDescriptor(keyPath: \Item.timestamp, ascending: true)],
-        animation: .default)
-    private var items: FetchedResults<Item>
+class TodoListVM<DS: DataService> : ObservableObject where DS.Item == Todo {
+    @Published private(set) var todos: [Todo] = []
+    
+    private let ds: DS
+    private var cancellables = Set<AnyCancellable>()
+    
+    init(ds: DS) {
+        self.ds = ds
+        ds.getData()
+            .sink { error in
+                fatalError()
+            } receiveValue: { [weak self] todos in
+                self?.todos = todos
+            }
+            .store(in: &cancellables)
+    }
+    
+    // CRUD
+    
+    func add(todo: Todo) {
+        ds.add(todo)
+    }
+    func update(todo: Todo) {
+        ds.update(todo)
+    }
+    func delete(indexSet: IndexSet) {
+        var todosToDelete: [Todo] = []
+        
+        for index in indexSet {
+            todosToDelete.append(todos[index])
+        }
+        
+        for todo in todosToDelete {
+            ds.delete(todo)
+        }
+    }
+}
 
+struct TodoRowView: View {
+    let todo: Todo
+    var save: (Todo) -> ()
+    
+    @State private var vm = Todo()
+    
     var body: some View {
-        NavigationView {
+        HStack {
+            Image(systemName: todo.isDone ? "checkmark.circle" : "circle")
+                .onTapGesture {
+                    vm.isDone.toggle()
+                    save(todo)
+                }
+            TextField("Todo item", text: $vm.text)
+                .textFieldStyle(.roundedBorder)
+                .onChange(of: vm) { newValue in
+                    save(newValue)
+                }
+        }
+        .onAppear {
+            vm = todo
+        }
+    }
+}
+struct ContentView: View {
+    @StateObject var vm = TodoListVM(ds: FBDataService(path: "todolist"))
+    var body: some View {
+        NavigationStack {
             List {
-                ForEach(items) { item in
-                    NavigationLink {
-                        Text("Item at \(item.timestamp!, formatter: itemFormatter)")
-                    } label: {
-                        Text(item.timestamp!, formatter: itemFormatter)
-                    }
+                ForEach(vm.todos) { todo in
+                    TodoRowView(todo: todo, save: vm.update)
                 }
-                .onDelete(perform: deleteItems)
+                .onDelete(perform: vm.delete)
             }
+            .navigationTitle("Todos")
             .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
+                Button {
+                    vm.add(todo: Todo())
+                } label: {
+                    Text("Add")
                 }
-                ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
-                    }
-                }
-            }
-            Text("Select an item")
-        }
-    }
 
-    private func addItem() {
-        withAnimation {
-            let newItem = Item(context: viewContext)
-            newItem.timestamp = Date()
-
-            do {
-                try viewContext.save()
-            } catch {
-                // Replace this implementation with code to handle the error appropriately.
-                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-            }
-        }
-    }
-
-    private func deleteItems(offsets: IndexSet) {
-        withAnimation {
-            offsets.map { items[$0] }.forEach(viewContext.delete)
-
-            do {
-                try viewContext.save()
-            } catch {
-                // Replace this implementation with code to handle the error appropriately.
-                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
             }
         }
     }
 }
 
-private let itemFormatter: DateFormatter = {
-    let formatter = DateFormatter()
-    formatter.dateStyle = .short
-    formatter.timeStyle = .medium
-    return formatter
-}()
-
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+        ContentView()
     }
 }
