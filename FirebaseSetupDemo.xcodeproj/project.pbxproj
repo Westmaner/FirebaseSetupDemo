@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9101729D2A83EFE2002C3B79 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9101729C2A83EFE2002C3B79 /* LoginView.swift */; };
 		91B42E6D2A521C84002CDF28 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 91B42E6C2A521C83002CDF28 /* GoogleService-Info.plist */; };
 		91C8B5E62A51B2870010BCE3 /* FirebaseSetupDemoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91C8B5E52A51B2870010BCE3 /* FirebaseSetupDemoApp.swift */; };
 		91C8B5E82A51B2870010BCE3 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91C8B5E72A51B2870010BCE3 /* ContentView.swift */; };
@@ -39,6 +40,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		9101729C2A83EFE2002C3B79 /* LoginView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		91B42E6C2A521C83002CDF28 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		91C8B5E22A51B2870010BCE3 /* FirebaseSetupDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FirebaseSetupDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		91C8B5E52A51B2870010BCE3 /* FirebaseSetupDemoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseSetupDemoApp.swift; sourceTree = "<group>"; };
@@ -107,6 +109,7 @@
 			children = (
 				91C8B5E52A51B2870010BCE3 /* FirebaseSetupDemoApp.swift */,
 				91C8B6172A51B2FB0010BCE3 /* FBDataService.swift */,
+				9101729C2A83EFE2002C3B79 /* LoginView.swift */,
 				91C8B5E72A51B2870010BCE3 /* ContentView.swift */,
 				91C8B5E92A51B2880010BCE3 /* Assets.xcassets */,
 				91B42E6C2A521C83002CDF28 /* GoogleService-Info.plist */,
@@ -282,6 +285,7 @@
 			files = (
 				91C8B6182A51B2FB0010BCE3 /* FBDataService.swift in Sources */,
 				91C8B5E82A51B2870010BCE3 /* ContentView.swift in Sources */,
+				9101729D2A83EFE2002C3B79 /* LoginView.swift in Sources */,
 				91C8B5E62A51B2870010BCE3 /* FirebaseSetupDemoApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
